@@ -91,7 +91,7 @@ with(combind, plot(Date_Time_New, Values,type = "l", ylab = "Energy sub metering
 with(subset(combind, Sub_metering == "Sub_metering_1"), lines(Date_Time_New, Values, col = "black"))
 with(subset(combind, Sub_metering == "Sub_metering_2"), lines(Date_Time_New, Values, col = "red"))
 with(subset(combind, Sub_metering == "Sub_metering_3"), lines(Date_Time_New, Values, col = "blue"))
-legend("topright",lty = 1,merge = TRUE,col = c("black","blue", "red"), legend = c("Sub_metering_1", "Sub_metering_2","Sub_metering_3"))
+legend("topright",lty = 1,merge = TRUE,col = c("red","blue", "blue"), legend = c("Sub_metering_1", "Sub_metering_2","Sub_metering_3"))
 
 dev.off()
 
