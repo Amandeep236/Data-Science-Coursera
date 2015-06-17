@@ -4,7 +4,6 @@
 
 
 rm(list = ls())
-setwd("C:/Users/Cindy/Desktop/R/UCI HAR Dataset")
 library(dplyr)
 
 
