@@ -1,7 +1,7 @@
 
 # Introduction
 
-The data involves in a experiment about human activity recognition. 30 subjects participant in the experiment. During the process, they wear a smartphone on the waist and take six activities, namely walking, walking upstairs, walking downstairs, sitting, standing and laying. The smartphone records data by using its embedded accelerometer and gyroscope when subjects precess activities. The purpose of the project is to clean the raw data and prepare a tidy dataset for later analysis. The relevant processes are following.      
+The data involves in a experiment about human activity recognition. 30 subjects participate in the experiment. During the process, they wear a smartphone on the waist and take six activities, namely walking, walking upstairs, walking downstairs, sitting, standing and laying. The smartphone records data by using its embedded accelerometer and gyroscope when subjects precess activities. The purpose of the project is to clean the raw data and prepare a tidy dataset for later analysis. The processes are following.      
 
 
 ### Raw Dataset    
