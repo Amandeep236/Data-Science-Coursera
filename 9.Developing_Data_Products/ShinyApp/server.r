@@ -3,10 +3,12 @@
 library(shiny)
 library(dplyr)
 library(ggplot2)
-library(rCharts)
 library(tidyr)
 library(scales)
+library(markdown)
 
+
+#setwd("C:/Users/Cindy/Desktop/ShinyApp")
 data <- read.csv("data.csv")
 
 shinyServer(
@@ -138,6 +140,33 @@ shinyServer(
              ggtitle("Top 10 Harmful Weather Events for Crop (Million Dollars)") + 
              theme(plot.title = element_text(lineheight = .8, face = "bold", size = 15))
          }else {
+           Q2_prop <- data %>%
+             select(evtype,propdmg,propdmgexp) %>%
+             mutate(New_PROPDMGEXP = ifelse(propdmgexp == "B", propdmg*1000000000,
+                                            ifelse(propdmgexp == "K", propdmg*1000,
+                                                   ifelse(propdmgexp == "m" | propdmg =="M", propdmg*1000000,
+                                                          ifelse(propdmgexp == "h" | propdmg =="H", propdmg*100,"NotAValue"))))) %>%
+             filter(!New_PROPDMGEXP == "NotAValue") %>%
+             mutate(New_PROPDMGEXP = as.numeric(New_PROPDMGEXP)) %>%
+             group_by(evtype) %>%
+             summarise(PROP_DMG_EXP = (sum(New_PROPDMGEXP))/1000000) %>%
+             arrange(desc(PROP_DMG_EXP)) %>%
+             mutate(pro_Rank = rank(desc(PROP_DMG_EXP))) %>%
+             filter(pro_Rank < 11)
+           
+           Q2_crop <- data %>%
+             select(evtype,cropdmg,cropdmgexp) %>%
+             mutate(New_CROPDMGEXP = ifelse(cropdmgexp == "B", cropdmg*1000000000,
+                                            ifelse(cropdmgexp == "m" | cropdmgexp =="M", cropdmg*1000000,
+                                                   ifelse(cropdmgexp == "k" | cropdmgexp =="K", cropdmg*1000,"NotAValue")))) %>%
+             filter(!New_CROPDMGEXP == "NotAValue") %>%
+             mutate(New_CROPDMGEXP = as.numeric(New_CROPDMGEXP)) %>%
+             group_by(evtype) %>%
+             summarise(CROP_DMG_EXP = (sum(New_CROPDMGEXP))/1000000) %>%
+             arrange(desc(CROP_DMG_EXP)) %>%
+             mutate(crop_Rank = rank(desc(CROP_DMG_EXP))) %>%
+             filter(crop_Rank < 11)
+           
            economics <- Q2_prop %>%
              left_join(Q2_crop, by = "evtype") %>%
              mutate(CROP_DMG_EXP = ifelse(is.na(CROP_DMG_EXP), 0,CROP_DMG_EXP),

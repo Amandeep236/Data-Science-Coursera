@@ -1,0 +1,8 @@
+name: ShinyApp
+account: hy-cheng
+server: shinyapps.io
+bundleId: 208914
+url: https://hy-cheng.shinyapps.io/ShinyApp
+when: 1434913676.12506
+asMultiple: FALSE
+asStatic: FALSE

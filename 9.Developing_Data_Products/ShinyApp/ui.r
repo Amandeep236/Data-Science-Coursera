@@ -1,8 +1,5 @@
 
 
-
-setwd('C:/Users/Cindy/Desktop/Coursera/Developing Data Products/Project')
-
 library(shiny)
 library(dplyr)
 
@@ -48,6 +45,6 @@ shinyUI(fluidPage(
         )))
       
 
-navbarPage
+
 
 
