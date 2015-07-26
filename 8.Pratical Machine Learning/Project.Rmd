@@ -57,27 +57,27 @@ table(train$classe)
  - 5 classe including A, B, C, D and E are dependent variables.    
  
 #### **Variables Selection.**     
-1. Exclude irrelevant variables.    
+**1. Exclude irrelevant variables.**    
 ```{r}
 train1 <- train %>% select(-X, -user_name, -raw_timestamp_part_1, 
                            -raw_timestamp_part_2, -cvtd_timestamp,
                            -new_window)
 ```
     
-2. Remove columes that contain over 60% missing values or "".        
+**2. Remove columes that contain over 60% missing values or "".**        
 ```{r}
 number <- dim(train1)[1] * 0.60
 var <- !apply(train1, 2, function(x) sum(is.na(x)) > number || sum(x=="") > number)
 train2 <- train1[, var]
 ```
 
-3. Remove near zero variance predictors.    
+**3. Remove near zero variance predictors.**    
 ```{r}
 NearZ <- nearZeroVar(train2, saveMetrics = TRUE)
 train3 <- train2[, NearZ$zeroVar == FALSE]
 ```
 
-4. Partition train dataset into a training dataset and validation dataset.
+**4. Partition train dataset into a training dataset and validation dataset.**
 ```{r}
 set.seed(123)
 partition <- createDataPartition(train$classe, p = 0.75, list = FALSE)
@@ -85,7 +85,7 @@ training <- train3[partition, ]
 validation <- train3[-partition, ]
 ```
 
-5. Use the same data processing to deal with test data set.        
+**5. Use the same data processing to deal with test data set.**        
 ```{r}
 test <- test %>% select(-X, -user_name, -raw_timestamp_part_1, 
                            -raw_timestamp_part_2, -cvtd_timestamp,
@@ -143,7 +143,7 @@ pml_write_files = function(x){
   n = length(x)
   for(i in 1:n){
     filename = paste0("problem_id_",i,".txt")
-    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+    write.table(x[i],file = filename,quote=FALSE,row.names = FALSE,col.names = FALSE)
   }
 }
 

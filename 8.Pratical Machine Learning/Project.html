@@ -113,33 +113,23 @@ unlink(temp1)</code></pre>
 </ul>
 <div id="variables-selection." class="section level4">
 <h4><strong>Variables Selection.</strong></h4>
-<ol style="list-style-type: decimal">
-<li>Exclude irrelevant variables.</li>
-</ol>
+<p><strong>1. Exclude irrelevant variables.</strong></p>
 <pre class="r"><code>train1 &lt;- train %&gt;% select(-X, -user_name, -raw_timestamp_part_1, 
                            -raw_timestamp_part_2, -cvtd_timestamp,
                            -new_window)</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Remove columes that contain over 60% missing values or “”.</li>
-</ol>
+<p><strong>2. Remove columes that contain over 60% missing values or “”.</strong></p>
 <pre class="r"><code>number &lt;- dim(train1)[1] * 0.60
 var &lt;- !apply(train1, 2, function(x) sum(is.na(x)) &gt; number || sum(x==&quot;&quot;) &gt; number)
 train2 &lt;- train1[, var]</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Remove near zero variance predictors.</li>
-</ol>
+<p><strong>3. Remove near zero variance predictors.</strong></p>
 <pre class="r"><code>NearZ &lt;- nearZeroVar(train2, saveMetrics = TRUE)
 train3 &lt;- train2[, NearZ$zeroVar == FALSE]</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>Partition train dataset into a training dataset and validation dataset.</li>
-</ol>
+<p><strong>4. Partition train dataset into a training dataset and validation dataset.</strong></p>
 <pre class="r"><code>set.seed(123)
 partition &lt;- createDataPartition(train$classe, p = 0.75, list = FALSE)
 training &lt;- train3[partition, ]
 validation &lt;- train3[-partition, ]</code></pre>
-<ol start="5" style="list-style-type: decimal">
-<li>Use the same data processing to deal with test data set.</li>
-</ol>
+<p><strong>5. Use the same data processing to deal with test data set.</strong></p>
 <pre class="r"><code>test &lt;- test %&gt;% select(-X, -user_name, -raw_timestamp_part_1, 
                            -raw_timestamp_part_2, -cvtd_timestamp,
                            -new_window)
