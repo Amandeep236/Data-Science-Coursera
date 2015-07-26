@@ -1,0 +1,151 @@
+
+# **Pratical Machine Learning Project.**         
+
+ **Hsin-Yu Cheng**    
+ **July 26, 2015**          
+
+## Introduction        
+In this project, the task will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways including A, B, C, D and E classe.    
+
+The data set contains a train and a test dataset. The goal of the project is to build predict models with various algoritms and select the best model in training data. Then, the best prediction model is used to predict 20 different test cases in test dataset.  
+
+More information and data source is following.    
+[http://groupware.les.inf.puc-rio.br/har](http://groupware.les.inf.puc-rio.br/har)    
+    
+***    
+    
+
+## **Load Package**    
+```{r,message=FALSE}
+library(MASS)
+library(dplyr)
+library(caret)
+library(randomForest)
+library(ggplot2)
+knitr::opts_chunk$set(comment = NA, message = F,cache=TRUE)
+```
+    
+***    
+    
+## **Downlaod data from Internet.**        
+```{r,cache=TRUE}
+setInternet2(TRUE)
+temp <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",temp)
+train <- read.csv(temp)
+unlink(temp)
+
+setInternet2(TRUE)
+temp1 <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv",temp1)
+test <- read.csv(temp1)
+unlink(temp1)
+```
+    
+    
+  
+## **Data Processing.**    
+```{r}
+dim(train)
+dim(test)
+```
+ - In training data set, there are 19622 observations and 160 variables.    
+
+```{r}
+table(train$classe)
+```    
+ - 5 classe including A, B, C, D and E are dependent variables.    
+ 
+#### **Variables Selection.**     
+1. Exclude irrelevant variables.    
+```{r}
+train1 <- train %>% select(-X, -user_name, -raw_timestamp_part_1, 
+                           -raw_timestamp_part_2, -cvtd_timestamp,
+                           -new_window)
+```
+    
+2. Remove columes that contain over 60% missing values or "".        
+```{r}
+number <- dim(train1)[1] * 0.60
+var <- !apply(train1, 2, function(x) sum(is.na(x)) > number || sum(x=="") > number)
+train2 <- train1[, var]
+```
+
+3. Remove near zero variance predictors.    
+```{r}
+NearZ <- nearZeroVar(train2, saveMetrics = TRUE)
+train3 <- train2[, NearZ$zeroVar == FALSE]
+```
+
+4. Partition train dataset into a training dataset and validation dataset.
+```{r}
+set.seed(123)
+partition <- createDataPartition(train$classe, p = 0.75, list = FALSE)
+training <- train3[partition, ]
+validation <- train3[-partition, ]
+```
+
+5. Use the same data processing to deal with test data set.        
+```{r}
+test <- test %>% select(-X, -user_name, -raw_timestamp_part_1, 
+                           -raw_timestamp_part_2, -cvtd_timestamp,
+                           -new_window)
+
+test <- test[, var]
+test <- test[, NearZ$zeroVar == FALSE]
+```
+    
+***
+    
+## **Predictive Models**   
+**1. lda**
+```{r}
+model.lda <- train(classe ~ ., data=training, method = "lda")
+```
+
+```{r}
+pre.lda.training <- predict(model.lda, training)
+confusionMatrix(pre.lda.training, training$classe)
+```
+
+**2. Random Forest Tree**
+```{r}
+set.seed(123)
+model.rf <- randomForest(classe~.
+                           , data = training
+                           , importance = TRUE, proximity = TRUE)
+```
+
+```{r}
+pre.rf.training <- predict(model.rf, training)
+print(confusionMatrix(pre.rf.training, training$classe))
+```
+ - As can be seen from the confusion matrix matrix result, the accuracy from random forest tree model is higher than lda model, 100% and 72% respectively. Thus, the final best model is chosen by using **random forest tree algorithm**.    
+     
+***    
+    
+## **Cross Validation**
+```{r}
+pre.rf.validation <- predict(model.rf, validation)
+print(confusionMatrix(pre.rf.validation, validation$classe))
+```
+ - Use the best model from random forest tree to validate whether it's overfitting.    
+ - The accuracy of cross validation model is 0.9969% and the **out-of-sample error** is **0.0031%**. It is not overfitting and the model performs well.        
+    
+***
+    
+## **Submission Preparation.**     
+```{r}
+predict.test <- predict(model.rf, test)
+predict.test
+
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+pml_write_files(predict.test)
+```
